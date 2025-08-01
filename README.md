@@ -114,6 +114,7 @@ Fetches a CSV directory of all users in the workspace.
 - [Authentication Setup](docs/01-authentication-setup.md)
 - [Installation](docs/02-installation.md)
 - [Configuration and Usage](docs/03-configuration-and-usage.md)
+- [Heroku Deployment](docs/heroku-deployment.md)
 
 ### Environment Variables (Quick Reference)
 

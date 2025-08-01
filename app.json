@@ -1,0 +1,38 @@
+{
+  "name": "slack-mcp-server",
+  "description": "Model Context Protocol (MCP) server for Slack Workspaces",
+  "repository": "https://github.com/korotovsky/slack-mcp-server",
+  "keywords": ["slack", "mcp", "model-context-protocol", "go"],
+  "buildpacks": [
+    {
+      "url": "heroku/go"
+    }
+  ],
+  "env": {
+    "SLACK_MCP_XOXC_TOKEN": {
+      "description": "Slack browser token (xoxc-...)",
+      "required": false
+    },
+    "SLACK_MCP_XOXD_TOKEN": {
+      "description": "Slack browser cookie d (xoxd-...)",
+      "required": false
+    },
+    "SLACK_MCP_XOXP_TOKEN": {
+      "description": "User OAuth token (xoxp-...) - alternative to xoxc/xoxd",
+      "required": false
+    },
+    "SLACK_MCP_SSE_API_KEY": {
+      "description": "Bearer token for SSE transport",
+      "required": false
+    },
+    "SLACK_MCP_LOG_LEVEL": {
+      "description": "Log level (debug, info, warn, error, panic, fatal)",
+      "value": "info",
+      "required": false
+    },
+    "SLACK_MCP_ADD_MESSAGE_TOOL": {
+      "description": "Enable message posting (true, comma-separated channel IDs, or empty to disable)",
+      "required": false
+    }
+  }
+}

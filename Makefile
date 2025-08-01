@@ -49,6 +49,7 @@ clean: ## Clean up all build artifacts
 .PHONY: build
 build: clean tidy format ## Build the project
 	go build $(COMMON_BUILD_ARGS) -o ./build/$(BINARY_NAME) ./cmd/slack-mcp-server
+	cp ./build/$(BINARY_NAME) ./$(BINARY_NAME)
 
 .PHONY: build-all-platforms
 build-all-platforms: clean tidy format ## Build the project for all platforms

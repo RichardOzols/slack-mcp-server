@@ -16,7 +16,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var defaultSseHost = "127.0.0.1"
+var defaultSseHost = "0.0.0.0"
 var defaultSsePort = 13080
 
 func main() {
@@ -62,7 +62,10 @@ func main() {
 		if host == "" {
 			host = defaultSseHost
 		}
-		port := os.Getenv("SLACK_MCP_PORT")
+		port := os.Getenv("PORT") // Heroku uses PORT env var
+		if port == "" {
+			port = os.Getenv("SLACK_MCP_PORT")
+		}
 		if port == "" {
 			port = strconv.Itoa(defaultSsePort)
 		}

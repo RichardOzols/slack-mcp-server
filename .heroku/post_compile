@@ -5,6 +5,10 @@ set -e
 
 echo "-----> Post-compile: Ensuring slack-mcp-server binary is accessible"
 
+# Check current directory structure
+echo "-----> Current directory contents:"
+ls -la .
+
 # Check if binary exists in various possible locations
 if [ -f "./slack-mcp-server" ]; then
     echo "-----> Binary already exists at ./slack-mcp-server"
@@ -15,13 +19,20 @@ elif [ -f "./bin/slack-mcp-server" ]; then
 elif [ -f "./cmd/slack-mcp-server/slack-mcp-server" ]; then
     echo "-----> Found binary at ./cmd/slack-mcp-server/slack-mcp-server, copying to root"
     cp ./cmd/slack-mcp-server/slack-mcp-server ./slack-mcp-server
+elif [ -f "$GOPATH/bin/slack-mcp-server" ]; then
+    echo "-----> Found binary at \$GOPATH/bin/slack-mcp-server, copying to root"
+    cp "$GOPATH/bin/slack-mcp-server" ./slack-mcp-server
 else
-    echo "-----> Binary not found, building it"
+    echo "-----> Binary not found in expected locations, building it"
+    echo "-----> Building binary with: go build -ldflags \"-s -w\" -o slack-mcp-server ./cmd/slack-mcp-server"
     go build -ldflags "-s -w" -o slack-mcp-server ./cmd/slack-mcp-server
 fi
 
 echo "-----> Final check: Binary location and permissions"
 ls -la ./slack-mcp-server
 chmod +x ./slack-mcp-server
+
+echo "-----> Testing binary execution"
+./slack-mcp-server --help || echo "Note: Binary may require environment variables for full functionality"
 
 echo "-----> Post-compile completed successfully"

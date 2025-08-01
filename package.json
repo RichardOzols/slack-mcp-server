@@ -1,0 +1,17 @@
+{
+  "name": "slack-mcp-server",
+  "version": "1.0.0",
+  "description": "Slack MCP Server - A Model Context Protocol (MCP) server for Slack integration",
+  "scripts": {
+    "heroku-postbuild": "cd cmd/slack-mcp-server && GOOS=linux GOARCH=amd64 go build -o ../../slack-mcp-server"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/korotovsky/slack-mcp-server.git"
+  },
+  "license": "MIT"
+}

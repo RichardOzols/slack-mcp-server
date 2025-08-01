@@ -1,0 +1,27 @@
+#!/bin/bash
+# Post-compile hook to ensure binary is in the right location
+
+set -e
+
+echo "-----> Post-compile: Ensuring slack-mcp-server binary is accessible"
+
+# Check if binary exists in various possible locations
+if [ -f "./slack-mcp-server" ]; then
+    echo "-----> Binary already exists at ./slack-mcp-server"
+    ls -la ./slack-mcp-server
+elif [ -f "./bin/slack-mcp-server" ]; then
+    echo "-----> Found binary at ./bin/slack-mcp-server, copying to root"
+    cp ./bin/slack-mcp-server ./slack-mcp-server
+elif [ -f "./cmd/slack-mcp-server/slack-mcp-server" ]; then
+    echo "-----> Found binary at ./cmd/slack-mcp-server/slack-mcp-server, copying to root"
+    cp ./cmd/slack-mcp-server/slack-mcp-server ./slack-mcp-server
+else
+    echo "-----> Binary not found, building it"
+    go build -ldflags "-s -w" -o slack-mcp-server ./cmd/slack-mcp-server
+fi
+
+echo "-----> Final check: Binary location and permissions"
+ls -la ./slack-mcp-server
+chmod +x ./slack-mcp-server
+
+echo "-----> Post-compile completed successfully"

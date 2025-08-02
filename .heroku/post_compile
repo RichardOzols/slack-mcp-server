@@ -23,9 +23,83 @@ elif [ -f "$GOPATH/bin/slack-mcp-server" ]; then
     echo "-----> Found binary at \$GOPATH/bin/slack-mcp-server, copying to root"
     cp "$GOPATH/bin/slack-mcp-server" ./slack-mcp-server
 else
-    echo "-----> Binary not found in expected locations, building it"
-    echo "-----> Building binary with: go build -ldflags \"-s -w\" -o slack-mcp-server ./cmd/slack-mcp-server"
-    go build -ldflags "-s -w" -o slack-mcp-server ./cmd/slack-mcp-server
+    echo "-----> Binary not found in expected locations, searching for any slack-mcp-server binary"
+    # Look for the binary in common Go build locations
+    BINARY_LOCATIONS=(
+        "./slack-mcp-server"
+        "./bin/slack-mcp-server" 
+        "./cmd/slack-mcp-server/slack-mcp-server"
+        "$GOPATH/bin/slack-mcp-server"
+        "$HOME/go/bin/slack-mcp-server"
+        "/app/bin/slack-mcp-server"
+        "/tmp/cache/bin/slack-mcp-server"
+        "/tmp/build/bin/slack-mcp-server"
+        "/workspace/bin/slack-mcp-server"
+    )
+    
+    for location in "${BINARY_LOCATIONS[@]}"; do
+        if [ -f "$location" ]; then
+            echo "-----> Found binary at $location, copying to root"
+            cp "$location" ./slack-mcp-server
+            chmod +x ./slack-mcp-server
+            break
+        fi
+    done
+    
+    # If still not found, search specific locations for slack-mcp-server
+    if [ ! -f "./slack-mcp-server" ]; then
+        echo "-----> Searching specific locations for slack-mcp-server binary..."
+        SEARCH_LOCATIONS=(
+            "/app"
+            "/workspace" 
+            "/tmp/build"
+            "/tmp/cache"
+            "$GOPATH"
+            "$HOME/go"
+        )
+        
+        for search_dir in "${SEARCH_LOCATIONS[@]}"; do
+            if [ -d "$search_dir" ]; then
+                FOUND_BINARY=$(find "$search_dir" -name "slack-mcp-server" -type f -executable 2>/dev/null | head -1)
+                if [ -n "$FOUND_BINARY" ] && [ -f "$FOUND_BINARY" ]; then
+                    echo "-----> Found binary at $FOUND_BINARY"
+                    break
+                fi
+            fi
+        done
+        
+        # If slack-mcp-server not found, look for other potential binary names the Go buildpack might create
+        if [ -z "$FOUND_BINARY" ]; then
+            # Go buildpack might name the binary after the last path component or module name
+            POSSIBLE_NAMES=(
+                "slack-mcp-server"
+                "github.com-korotovsky-slack-mcp-server"
+                "korotovsky-slack-mcp-server" 
+                "cmd"
+            )
+            
+            for search_dir in "${SEARCH_LOCATIONS[@]}"; do
+                if [ -d "$search_dir" ]; then
+                    for name in "${POSSIBLE_NAMES[@]}"; do
+                        FOUND_BINARY=$(find "$search_dir" -name "$name" -type f -executable 2>/dev/null | head -1)
+                        if [ -n "$FOUND_BINARY" ] && [ -f "$FOUND_BINARY" ]; then
+                            echo "-----> Found potential binary at $FOUND_BINARY with name $name"
+                            break 2
+                        fi
+                    done
+                fi
+            done
+        fi
+        
+        if [ -n "$FOUND_BINARY" ] && [ -f "$FOUND_BINARY" ]; then
+            echo "-----> Found binary at $FOUND_BINARY, copying to root"
+            cp "$FOUND_BINARY" ./slack-mcp-server
+        else
+            echo "-----> Binary not found anywhere, building it"
+            echo "-----> Building binary with: go build -ldflags \"-s -w\" -o slack-mcp-server ./cmd/slack-mcp-server"
+            go build -ldflags "-s -w" -o slack-mcp-server ./cmd/slack-mcp-server
+        fi
+    fi
 fi
 
 echo "-----> Final check: Binary location and permissions"

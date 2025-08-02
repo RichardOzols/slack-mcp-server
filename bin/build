@@ -1,0 +1,13 @@
+#!/bin/bash
+# Build script for Heroku deployment
+
+set -e
+
+echo "-----> Building slack-mcp-server binary"
+
+# Build the binary in the root directory where Procfile expects it
+go build -ldflags "-s -w" -o slack-mcp-server ./cmd/slack-mcp-server
+
+echo "-----> Build completed successfully"
+echo "-----> Binary location: $(pwd)/slack-mcp-server"
+ls -la slack-mcp-server

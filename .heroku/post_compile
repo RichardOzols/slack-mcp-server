@@ -89,6 +89,19 @@ else
                     done
                 fi
             done
+            
+            # If still not found, search current directory for any executable that might be our binary
+            if [ -z "$FOUND_BINARY" ]; then
+                echo "-----> Searching current directory for any potential slack-mcp-server executable..."
+                # Look for any executable file that contains "slack" in the name
+                for file in ./*; do
+                    if [ -f "$file" ] && [ -x "$file" ] && [[ "$file" == *slack* ]]; then
+                        echo "-----> Found potential binary: $file"
+                        FOUND_BINARY="$file"
+                        break
+                    fi
+                done
+            fi
         fi
         
         if [ -n "$FOUND_BINARY" ] && [ -f "$FOUND_BINARY" ]; then
